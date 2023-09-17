@@ -14,12 +14,12 @@ class President:
     def __init__(self):
         pass
 
-    def status_code(self):
+    def _status_code(self):
         try:
             r = requests.head(self.pres_url)
-            print(r.status_code)
+            return r.status_code
         except requests.ConnectionError:
-            print(f"** FAILURE **: Failed to connect to given url: {self.pres_url}")
+            return f"** FAILURE ** Failed to connect to given url: {self.pres_url}"
     
     def get_table(self):
         site = requests.get(self.pres_url)
@@ -27,6 +27,19 @@ class President:
         table = soup.find('table', attrs={'class': 'wikitable'})
         return table
 
+    def raw_table_headers(self) -> list:
+        table = self.get_table()
+        try:
+            assert table
+            years = set()
+            date = "\d{4}"
+            for x in table.find_all('th'):
+                if re.search(date, x.text.strip()):
+                    years.add(x.text.strip())
+            return sorted(years)
+        
+        except AssertionError:
+            return "** FAILURE ** Failed to find given table"
 
 
 def get_data(url):
@@ -77,4 +90,4 @@ if __name__ == '__main__':
     # print(load_csv())
     # print(sum_across())
     pres = President()
-    pres.get_table()
+    print(pres.raw_table_headers())
