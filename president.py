@@ -41,6 +41,12 @@ class President:
         except AssertionError:
             return "** FAILURE ** Failed to find given table"
 
+    def get_raw_data(self):
+        table = self.get_table()
+        tr = table.find_all('tr')
+        vals = []
+        for row in tr:
+            print(row.text.strip())
 
 def get_data(url):
     site = requests.get(url)
@@ -90,4 +96,4 @@ if __name__ == '__main__':
     # print(load_csv())
     # print(sum_across())
     pres = President()
-    print(pres.raw_table_headers())
+    print(pres.get_raw_data())
